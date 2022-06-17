@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <title>Quiz</title>
+</head>
+<body>
+    <div id="quiz-page">
+        <navigation></navigation>
+        <div class="white-box p-3">
+            <div class="d-flex">
+                <button class="btn btn-primary" @click="showQuizForm = !showQuizForm">quiz formulier</button>
+            </div>
+            <div v-if="showQuizForm" class="col-8">
+                <form class="form-group d-flex flex-wrap">
+                    <div class="col-lg-6 col-sm-12">
+                        <label class="" for="quizTitle">Titel:</label>
+                        <input type="text" id="quizTitle" class="form-control" v-model="quizTitleInput">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizDescription">Omschrijving:</label>
+                        <textarea type="text" id="quizDescription" class="form-control" v-model="quizDescriptionInput"></textarea>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizQuestion">Vraag:</label>
+                        <input type="text" id="quizQuestion" class="form-control" v-model="quizQuestionInput">
+                    </div>
+                    <div class="col-lg-6  col-sm-12">
+                        <label for="quizAnswer1">Antwoord 1:</label>
+                        <input type="text" id="quizAnswer1" class="form-control" v-model="quizAnswer1Input">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer2">Antwoord 2:</label>
+                        <input type="text" id="quizAnswer2" class="form-control" v-model="quizAnswer2Input">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer3">Antwoord 3</label>
+                        <input type="text" id="quizAnswer3" class="form-control" v-model="quizAnswer3Input">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer4">Antwoord 4:</label>
+                        <input type="text" id="quizAnswer4" class="form-control" v-model="quizAnswer4Input">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizCorrectAnswer">Correct antwoord</label>
+                        <input type="text" id="quizCorrectAnswer" class="form-control" v-model="quizCorrectAnswerInput">
+                    </div>
+                </form>
+            </div>
+            <div v-if="result" class="d-flex flex-column">
+                <div v-for="(quiz, index) of result.quiz_list" :key="index">{{ quiz.title }}</div>
+            </div>
+            <table class="users-list d-flex flex-column" style="max-width:500px;">
+                <tr>
+                    <th class="pl-3 pr-3">User id</th>
+                    <th class="pl-3 pr-3">Username</th>
+                    <th class="pl-3 pr-3">created_at</th>
+                </tr>
+                <tr v-for="(user, index) of result.users_list" :key="index" class="user w-100">
+                    <td class="justify-items-center pl-3 pr-3">{{ user.id }}</td>
+                    <td class="justify-items-center pl-3 pr-3">{{ user.username }}</td>
+                    <td class="justify-items-center pl-3 pr-3">{{ user.created_at }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="../vue/quiz.js"></script>
+    <script src="../vue/components/navbar.js"></script>
+</body>
+</html>
