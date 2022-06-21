@@ -1,24 +1,32 @@
+import { web } from "./helpers/helpers.js";
+
 new Vue({
     el: '#quiz-page',
     data() {
         return {
-            quizTitleInput: '',
-            quizDescriptionInput: '',
-            quizQuestionInput: '',
-            quizAnswer1Input: '',
-            quizAnswer2Input: '',
-            quizAnswer3Input: '',
-            quizAnswer4Input: '',
-            quizCorrectAnswerInput: '',
+            quizTitleInput: 'test',
+            quizDescriptionInput: 'test',
+            quizQuestionInput: 'test',
+            quizAnswer1Input: 'test',
+            quizAnswer2Input: 'test',
+            quizAnswer3Input: 'test',
+            quizAnswer4Input: 'test',
+            quizCorrectAnswerInput: 'test',
             responseData: false,
             result: false,
             showQuizForm: false,
-            quizData: false
+            quizData: false,
+            user: false
         }
     },
     mounted() {
+        const vm = this;
         this.fetch("index.php?q=users", "get");
         this.quizData = this.fetch("index.php?q=quiz", "get");
+        if (localStorage.getItem("user_id")) {
+            web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
+        }
+
     },
     methods: {
         fetch(url, method, formData = false) {
@@ -45,17 +53,31 @@ new Vue({
             }
         },
         createQuiz() {
+            console.log('in create func')
             const vm = this;
+            let arr = [
+                { 
+                    question: vm.quizQuestionInput,
+                    choices:[
+                        { answer: vm.quizAnswer1Input, correct: 0 },
+                        { answer: vm.quizAnswer2Input, correct: 0 },
+                        { answer: vm.quizAnswer3Input, correct: 0 },
+                        { answer: vm.quizAnswer4Input, correct: 0 },
+                    ]
+                }
+            ];
             const args = {
+                id: parseInt(localStorage.getItem("user_id")),
                 quizTitle: vm.quizTitleInput,
                 quizDescription: vm.quizDescriptionInput,
-                quizQuestion: vm.quizQuestionInput,
-                quizAnswer1: vm.quizAnswer1Input,
-                quizAnswer2: vm.quizAnswer2Input,
-                quizAnswer3: vm.quizAnswer3Input,
-                quizAnswer4: vm.quizAnswer4Input,
+                quizQuestions: arr
             }
-            this.fetch("")
-        } 
+            web("http://localhost/Quiz/index.php?q=createQuiz", "post", args);
+        },
+        deleteQuiz(id, index) {
+            const vm = this;
+            web("index.php?q=deleteQuiz&id=" + id, "get");
+            vm.result.quiz_list.splice(index,1)
+        }
     },
 });

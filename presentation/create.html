@@ -29,11 +29,18 @@
             top: -6px;
             border-radius: 10px;
         }
+         .selectedCorrectAnswer {
+            border-color:green;
+            box-shadow: 0 0 0 0.2rem rgba(0, 255, 38, 0.25)
+        }
     </style>
 </head>
 <body>
     <div id="create-page">
         <navigation active="Create"></navigation>
+        <div v-if="quizSuccess" class="animated slideInDown alert alert-success col-lg-6" style="margin:10px 25px;">
+            <p><b>Success!</b> Quiz aangemaakt</p>
+        </div>
         <div class="col-8">
             <div class="step-container d-flex">
                 <div class="step1">
@@ -53,43 +60,78 @@
                     </div>
                 </div>
             </div>
-            <form class="form-group d-flex flex-wrap">
-                <div class="col-lg-6 col-sm-12">
-                    <label class="" for="quizTitle">Titel:</label>
-                    <input type="text" id="quizTitle" class="form-control" v-model="quizTitleInput">
+            <form class="form-group">
+                <div class="form-group d-flex flex-wrap">
+                    <div class="col-lg-6 col-sm-12">
+                        <label class="" for="quizTitle">Titel:</label>
+                        <input type="text" id="quizTitle" class="form-control" v-model="quizTitleInput">
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizDescription">Omschrijving:</label>
+                        <textarea type="text" id="quizDescription" class="form-control" v-model="quizDescriptionInput"></textarea>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizQuestion">Vraag:</label>
+                        <input type="text" id="quizQuestion" class="form-control" v-model="quizQuestionInput">
+                    </div>
                 </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizDescription">Omschrijving:</label>
-                    <textarea type="text" id="quizDescription" class="form-control" v-model="quizDescriptionInput"></textarea>
+                <div class="form-group d-flex flex-wrap">
+                    <div class="col-lg-6  col-sm-12">
+                        <label for="quizAnswer1">Antwoord 1:</label>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" class="mr-2" name="correct_answer" value="1" v-model="correctAnswer" id="">
+                            <div class="input-group">
+                                <input type="text" id="quizAnswer1" class="form-control" v-model="quizAnswer1Input">
+                                <div v-if="correctAnswer == parseInt(1)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                    <span style="padding: 0 5px;">&#10004;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer2">Antwoord 2:</label>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="2" id="">
+                            <div class="input-group">
+                                <input type="text" id="quizAnswer2" class="form-control" v-model="quizAnswer2Input">
+                                <div v-if="correctAnswer == parseInt(2)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                    <span style="padding: 0 5px;">&#10004;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer3">Antwoord 3</label>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="3" id="">
+                            <div class="input-group">
+                                <input type="text" id="quizAnswer3" class="form-control" v-model="quizAnswer3Input">
+                                <div v-if="correctAnswer == parseInt(3)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                    <span style="padding: 0 5px;">&#10004;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-12">
+                        <label for="quizAnswer4">Antwoord 4:</label>
+                        <div class="d-flex align-items-center">
+                            <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="4" id="">
+                            <div class="input-group">
+                                <input type="text" id="quizAnswer4" class="form-control" v-model="quizAnswer4Input">
+                                <div v-if="correctAnswer == parseInt(4)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                    <span style="padding: 0 5px;">&#10004;</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizQuestion">Vraag:</label>
-                    <input type="text" id="quizQuestion" class="form-control" v-model="quizQuestionInput">
-                </div>
-                <div class="col-lg-6  col-sm-12">
-                    <label for="quizAnswer1">Antwoord 1:</label>
-                    <input type="text" id="quizAnswer1" class="form-control" v-model="quizAnswer1Input">
-                </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizAnswer2">Antwoord 2:</label>
-                    <input type="text" id="quizAnswer2" class="form-control" v-model="quizAnswer2Input">
-                </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizAnswer3">Antwoord 3</label>
-                    <input type="text" id="quizAnswer3" class="form-control" v-model="quizAnswer3Input">
-                </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizAnswer4">Antwoord 4:</label>
-                    <input type="text" id="quizAnswer4" class="form-control" v-model="quizAnswer4Input">
-                </div>
-                <div class="col-lg-6 col-sm-12">
-                    <label for="quizCorrectAnswer">Correct antwoord</label>
-                    <input type="text" id="quizCorrectAnswer" class="form-control" v-model="quizCorrectAnswerInput">
-                </div>
-                <button @click="createQuiz">create</button>
+                <button class="btn btn-primary mt-3" @click.prevent="createQuiz">create</button>
             </form>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script type="module" src="../vue/helpers/helpers.js"></script>
     <script type="module" src="../vue/create.js"></script>

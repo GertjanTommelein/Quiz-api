@@ -15,7 +15,7 @@ class QuizDAO {
         } 
         $quiz = new Quiz((int)$row['id'], $row['title'], $row['description']);
         foreach ($questions as $question) {
-            $sql = "INSERT INTO questions (quiz_id, question) VALUES (?, ?)";
+            $sql = "INSERT INTO questions (quiz_id, title) VALUES (?, ?)";
             $result = $db->pQuery($sql, 'is', [$quiz->getId(), $question['question']]);
             $questionLastInsertedId = $db->getLastInsertedId();
             foreach ($question['choices'] as $choice) {
@@ -43,7 +43,6 @@ class QuizDAO {
             $questionSql = "SELECT * FROM questions INNER JOIN choices on questions.id = choices.question_id WHERE quiz_id = ?";
             $result = $db->pQuery($questionSql, 'i', [$quiz->getId()]);
             $questionRows = $result->fetch_all(MYSQLI_ASSOC);
-            $questionAnswers = [];
             $question = false;
             foreach ($questionRows as $questionRow) {
                 if (!$question)  $question = new Question($questionRow['id'], $questionRow['title'],[]);
@@ -55,7 +54,10 @@ class QuizDAO {
         }
         return $quizList;
     }
-    public function update() {
+    public function update($id) {
+       /* $sql = "UPDATE quiz_list SET title, description WHERE id = ?";
+        $questionSql = "UPDATE questions SET title WHERE quiz_id = ?";
+        $choicesSql = "UPDATE choices SET answer, correct WHERE question_id = ?";*/
 
     }
     public function delete($id) {

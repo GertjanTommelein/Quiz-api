@@ -9,7 +9,6 @@
 </head>
 <body class="d-flex justify-content-center flex-column align-items-center" style="height:75vh;">
     <div id="login-page">
-        {{ test }}
         <h1>Login</h1>
         <form class="d-flex flex-column" method="POST">
             <input class="mb-3 form-control" type="text" name="loginUsername" placeholder="username" v-model="usernameInput">
@@ -19,6 +18,7 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="../vue/login.js"></script>
+    <script type="module" src="../vue/helpers/helpers.js"></script>
+    <script type="module" src="../vue/login.js"></script>
 </body>
 </html>
