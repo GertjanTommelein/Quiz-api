@@ -25,6 +25,16 @@ class QuizService {
         }
         return $quizData;
     }
+    public function update(int $quizId, string $quizTitle, string $quizDescription, array $questions) {
+        $quizDAO = new QuizDAO();
+        try {
+            $result = $quizDAO->update($quizId, $quizTitle, $quizDescription, $questions);
+            return $result;
+        } catch(Exception $e) {
+            $data['error'] = $e->getMessage();
+            return $data;
+        }
+    }
     public function delete($id) {
         $quizDAO = new QuizDAO();
         $quizDAO->delete($id);

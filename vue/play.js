@@ -10,9 +10,10 @@ new Vue({
         }
     },
     mounted() {
+        const vm = this;
         //this.fetch("index.php?q=users", "get");
         //this.quizData = this.fetch("index.php?q=quiz", "get");
-        this.quizData = web("index.php?q=quiz", "get");
+        web("index.php?q=quiz", "get").then((data) => vm.quizData = data);
     },
     methods: {
 

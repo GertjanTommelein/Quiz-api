@@ -51,6 +51,15 @@ if (isset($_GET['q'])) {
         else $data['result'] = false;
         print(json_encode($data));
     }
+    if ($_GET['q'] == 'updateQuiz') {
+        $quizSvc = new QuizService();
+        $json = file_get_contents('php://input');
+        $jsonData = json_decode($json, true);
+        $result = $quizSvc->update($jsonData['id'], $jsonData['title'], $jsonData['description'], $jsonData['questions']);
+        print(json_encode($result));
+        // print('<pre>');
+        // var_dump($jsonData);
+    }
     /*if ($_GET['q'] == "createQuiz") {
         $quizSvc = ////
     }*/

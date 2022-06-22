@@ -40,13 +40,13 @@ class QuizDAO {
         $quizList = [];
         foreach ($rows as $row) {
             $quiz = new Quiz($row['id'], $row['title'], $row['description']);
-            $questionSql = "SELECT * FROM questions INNER JOIN choices on questions.id = choices.question_id WHERE quiz_id = ?";
+            $questionSql = "SELECT questions.id, quiz_id, title, created_at, choices.id as choice_id, choices.question_id, answer, correct  FROM questions INNER JOIN choices on questions.id = choices.question_id WHERE quiz_id = ?";
             $result = $db->pQuery($questionSql, 'i', [$quiz->getId()]);
             $questionRows = $result->fetch_all(MYSQLI_ASSOC);
             $question = false;
             foreach ($questionRows as $questionRow) {
                 if (!$question)  $question = new Question($questionRow['id'], $questionRow['title'],[]);
-                $choicesData = ['title' => $questionRow['answer'], 'correct' => $questionRow['correct']];
+                $choicesData = ['id' => $questionRow['choice_id'], 'title' => $questionRow['answer'], 'correct' => $questionRow['correct']];
                 $question->pushChoice($choicesData);
             }
             $quiz->pushQuestion($question);
@@ -54,10 +54,34 @@ class QuizDAO {
         }
         return $quizList;
     }
-    public function update($id) {
-       /* $sql = "UPDATE quiz_list SET title, description WHERE id = ?";
-        $questionSql = "UPDATE questions SET title WHERE quiz_id = ?";
-        $choicesSql = "UPDATE choices SET answer, correct WHERE question_id = ?";*/
+    public function update(int $quizId, string $quizTitle, string $quizDescription, array $questions) {
+        $sql = "UPDATE quiz_list SET title = ?, description = ? WHERE id = ?";
+        $questionSql = "UPDATE questions SET title = ? WHERE quiz_id = ?";
+        $choicesSql = "UPDATE choices SET answer = ?, correct = ? WHERE question_id = ? AND id = ?";
+        $db = new Database();
+        $conn = $db->connect();
+        $conn->begin_transaction();
+        try {
+            $db->pQuery($sql, 'ssi', [$quizTitle, $quizDescription, $quizId]);
+            foreach ($questions as $question) {
+                $db->pQuery($questionSql, 'si', [$question['title'], $quizId]);
+                $lastUpdatedQuestionId = $db->getLastInsertedId();
+                foreach ($question['choices'] as $choice) {
+                    $db->pQuery($choicesSql, 'siii', [$choice['answer'], $choice['correct'], $question['id'], $choice['id']]);
+                }
+            }
+        $conn->commit();
+        $data['result'] = true;
+        return $data;
+        } catch (mysqli_sql_exception $e) {
+            $conn->rollback();
+            throw $e;
+            $data['result'] = false;
+            return $data;
+        }
+
+
+        
 
     }
     public function delete($id) {
@@ -65,12 +89,34 @@ class QuizDAO {
         $questionSql = "DELETE FROM questions WHERE quiz_id = ?";
         $db = new Database();
         $conn = $db->connect();
-        $stmt = $conn->prepare($questionSql);
-        $stmt2 = $conn->prepare($sql);
-        $stmt->bind_param('i', $id);
+        $selectQuestionsIdsSql = "SELECT id FROM questions WHERE quiz_id = ?";
+        $result = $db->pQuery($selectQuestionsIdsSql, 'i', [$id]);
+        $questionsIds = [];
+        while($row = $result->fetch_row()) {
+            array_push($questionsIds, $row[0]);
+        }
+        foreach($questionsIds as $qid) {
+            $stmt = $conn->prepare("DELETE FROM choices WHERE question_id = ?");
+            $stmt->bind_param('i', $qid);
+            $stmt->execute();
+        }
+        $stmt2 = $conn->prepare($questionSql);
+        $stmt = $conn->prepare($sql);
         $stmt2->bind_param('i', $id);
-        $stmt->execute();
+        $stmt->bind_param('i', $id);
         $stmt2->execute();
+        $stmt->execute();
+        
         $conn->close();
+    }
+    public function test($id) {
+        $sql = "SELECT id FROM questions WHERE quiz_id = ?";
+        $db = new Database();
+        $result = $db->pQuery($sql, 'i', [$id]);
+        $arr = [];
+        while($row = $result->fetch_row()) {
+            array_push($arr, $row[0]);
+        }
+        return $arr;
     }
 }
