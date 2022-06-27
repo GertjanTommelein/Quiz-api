@@ -3,17 +3,23 @@ declare(strict_types=1);
 require_once('data/Database.php');
 require_once('./entities/Quiz.php');
 require_once('./entities/Question.php');
+require_once('./exceptions/NotEnoughQuestions.php');
 class QuizDAO {
     public function create(int $uid, string $title, string $description, Array $questions = []) {
+        if (count($questions) < 1) {
+            throw new NotEnoughQuestions();
+        }
         $sql = "INSERT INTO quiz_list (title, description, created_by) VALUES (?, ? , ?)";
         $db = new Database();
         $result =  $db->pQuery($sql, 'ssi', [$title, $description, $uid]);
+        
         if (is_null($result)) return NULL;
         else {
             $result =  $db->pQuery("SELECT * FROM quiz_list WHERE id = ?", 'i', [$db->getLastInsertedId()]);
             $row = $result->fetch_assoc();
         } 
         $quiz = new Quiz((int)$row['id'], $row['title'], $row['description']);
+        
         foreach ($questions as $question) {
             $sql = "INSERT INTO questions (quiz_id, title) VALUES (?, ?)";
             $result = $db->pQuery($sql, 'is', [$quiz->getId(), $question['question']]);
@@ -40,16 +46,21 @@ class QuizDAO {
         $quizList = [];
         foreach ($rows as $row) {
             $quiz = new Quiz($row['id'], $row['title'], $row['description']);
-            $questionSql = "SELECT questions.id, quiz_id, title, created_at, choices.id as choice_id, choices.question_id, answer, correct  FROM questions INNER JOIN choices on questions.id = choices.question_id WHERE quiz_id = ?";
+            $questionSql = "SELECT *  FROM questions WHERE quiz_id = ?";
+            $choicesSql = "SELECT * FROM choices WHERE question_id = ?";
             $result = $db->pQuery($questionSql, 'i', [$quiz->getId()]);
             $questionRows = $result->fetch_all(MYSQLI_ASSOC);
             $question = false;
             foreach ($questionRows as $questionRow) {
-                if (!$question)  $question = new Question($questionRow['id'], $questionRow['title'],[]);
-                $choicesData = ['id' => $questionRow['choice_id'], 'title' => $questionRow['answer'], 'correct' => $questionRow['correct']];
-                $question->pushChoice($choicesData);
+                $question = new Question($questionRow['id'], $questionRow['title'],[]);
+                $choicesResult = $db->pQuery($choicesSql, 'i', [$question->getId()]);
+                $choicesRows = $choicesResult->fetch_all(MYSQLI_ASSOC);
+                foreach ($choicesRows as $choiceRow) {
+                    $choicesData = ['id' => $choiceRow['id'], 'title' => $choiceRow['answer'], 'correct' => $choiceRow['correct']];
+                    $question->pushChoice($choicesData);
+                }
+                $quiz->pushQuestion($question);
             }
-            $quiz->pushQuestion($question);
             array_push($quizList, $quiz);
         }
         return $quizList;

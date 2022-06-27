@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Edit quiz</title>
+    <style>
+       #edit-page {
+            padding: 15px;
+        }
+    </style>
 </head>
 <body>
     <div id="edit-page">
@@ -20,12 +25,99 @@
                     <label for="quizDescription">Omschrijving:</label>
                     <textarea type="text" id="quizDescription" class="form-control" v-model="quizDescriptionInput"></textarea>
                 </div>
+            </div>
+            <div class="form-group question-container">
                 <div class="col-lg-6 col-sm-12">
                     <label for="quizQuestion">Vraag:</label>
-                    <input type="text" id="quizQuestion" class="form-control" v-model="quizQuestionInput">
+                    <input type="text" id="quizQuestion" class="form-control" ref="quizQuestion" v-model="quizQuestionInput">
                 </div>
             </div>
-            <div class="form-group d-flex flex-wrap">
+            <div class="form-group d-flex flex-wrap choices-container">
+                <div class="col-lg-6  col-sm-12">
+                    <label for="quizAnswer1">Antwoord 1:</label>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="mr-2" name="correct_answer" value="1" v-model="correctAnswer" id="">
+                        <div class="input-group">
+                            <input type="text" id="quizAnswer1" class="form-control" ref="quizAnswer1" v-model="quizAnswer1Input">
+                            <div v-if="correctAnswer == parseInt(1)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                <span style="padding: 0 5px;">&#10004;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-sm-12">
+                    <label for="quizAnswer2">Antwoord 2:</label>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="2" id="">
+                        <div class="input-group">
+                            <input type="text" id="quizAnswer2" ref="quizAnswer2" class="form-control" v-model="quizAnswer2Input">
+                            <div v-if="correctAnswer == parseInt(2)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                <span style="padding: 0 5px;">&#10004;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-sm-12">
+                    <label for="quizAnswer3">Antwoord 3</label>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="3" id="">
+                        <div class="input-group">
+                            <input type="text" id="quizAnswer3" ref="quizAnswer3" class="form-control" v-model="quizAnswer3Input">
+                            <div v-if="correctAnswer == parseInt(3)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                <span style="padding: 0 5px;">&#10004;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-sm-12">
+                    <label for="quizAnswer4">Antwoord 4:</label>
+                    <div class="d-flex align-items-center">
+                        <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="4" id="">
+                        <div class="input-group">
+                            <input type="text" id="quizAnswer4" ref="quizAnswer4" class="form-control" v-model="quizAnswer4Input">
+                            <div v-if="correctAnswer == parseInt(4)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                <span style="padding: 0 5px;">&#10004;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3" @click.prevent="addQuestion(quizData[0].questions)">Voeg vraag toe</button>
+            </div>
+            <div v-if="quizData[0].questions.length" class="form-group">
+                <h5>Vragen:</h5>
+                <div v-for="(question, index) of quizData[0].questions" :index="index" class="card mb-2">
+                    <div class="card-header d-flex justify-content-between" style="cursor:pointer;border-bottom: 0px;" :id="'heading' + index" @click.prevent class="btn" data-toggle="collapse" :data-target="'#collapse' + index" aria-expanded="true" :aria-controls="'collapse' + index"> 
+                          {{ question.question }}
+                      <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                
+                    <div :id="'collapse' + index" class="collapse" :aria-labelledby="'heading' + index" data-parent=".form-group">
+                      <div class="card-body">
+                        <div class="form-group question-container">
+                            <div class="col-lg-6 col-sm-12">
+                                <label for="quizQuestion">Vraag:</label>
+                                <input type="text" id="quizQuestion" class="form-control" v-model="question.question">
+                            </div>
+                        </div>
+                        <div class="form-group d-flex flex-wrap choices-container">
+                            <div v-for="(choice, choiceIndex) of question.choices" :key="choiceIndex" class="col-lg-6  col-sm-12">
+                                <label for="quizAnswer1">Antwoord {{ choiceIndex }}:</label>
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" @change="checkCorrectAnswer(question)" class="mr-2" name="correct_choice" :value="choiceIndex +1" v-model="correctAnswer" id="">
+                                    <div class="input-group">
+                                        <input type="text" id="quizAnswer1" class="form-control" v-model="choice.title">
+                                        <div v-if="choice.correct == 1" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                                            <span style="padding: 0 5px;">&#10004;</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+            <!-- <div class="form-group d-flex flex-wrap">
                 <div class="col-lg-6  col-sm-12">
                     <label for="quizAnswer1">Antwoord 1:</label>
                     <div class="d-flex align-items-center">
@@ -68,13 +160,13 @@
                         <input type="radio" class="mr-2" name="correct_answer" v-model="correctAnswer" value="4" id="">
                         <div class="input-group">
                             <input type="text" id="quizAnswer4" class="form-control" v-model="quizAnswer4Input">
-                            <div v-if="correctAnswer == parseInt(4)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
+                            <div v-if="parseInt(correctAnswer) == parseInt(4)" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
                                 <span style="padding: 0 5px;">&#10004;</span>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
             <button class="btn btn-primary mt-3" @click.prevent="updateQuiz">Update</button>
         </form>
     </div>

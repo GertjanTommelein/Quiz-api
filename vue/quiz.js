@@ -78,6 +78,12 @@ new Vue({
             const vm = this;
             web("index.php?q=deleteQuiz&id=" + id, "get");
             vm.result.quiz_list.splice(index,1)
+        },
+        editQuiz(quizId) {
+            window.location.href= "edit_quiz.html?id=" + quizId
+        },
+        playQuiz(quizId) {
+            window.location.href= "play.html?id=" + quizId
         }
     },
 });

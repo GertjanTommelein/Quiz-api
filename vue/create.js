@@ -14,7 +14,9 @@ new Vue({
             quizCorrectAnswerInput: '',
             quizData: false,
             quizSuccess: false,
-            correctAnswer: ''
+            correctAnswer: 0,
+            step: 0,
+            questions: []
         }
     },
     mounted() {
@@ -39,7 +41,7 @@ new Vue({
                 id: parseInt(localStorage.getItem("user_id")),
                 quizTitle: vm.quizTitleInput,
                 quizDescription: vm.quizDescriptionInput,
-                quizQuestions: arr
+                quizQuestions: vm.questions
             }
             web("http://localhost/Quiz/index.php?q=createQuiz", "post", args).then(() => {
                 vm.quizSuccess = true
@@ -47,6 +49,79 @@ new Vue({
                     vm.quizSuccess = false
                 }, 8000);
             });
+        },
+        nextStep() {
+            if (this.step == 0 && this.$refs.quizTitle.classList.contains('error') || this.quizTitleInput == '') {
+
+            }
+            else this.step = this.step + 1;
+        },
+        previousStep() {
+            
+            if (this.step !== 0) this.step = this.step - 1;
+            
+        },
+        addQuestion() {
+            const vm = this;
+            if (this.$refs.quizQuestion.classList.contains('error') || this.$refs.quizAnswer1.classList.contains('error') || this.$refs.quizAnswer2.classList.contains('error') || this.$refs.quizAnswer3.classList.contains('error') || this.$refs.quizAnswer4.classList.contains('error')) return false
+            if (!this.quizQuestionInput || !this.quizAnswer1Input || !this.quizAnswer2Input || !this.quizAnswer3Input || !this.quizAnswer4Input) return false
+            if (this.correctAnswer == 0) return false
+            const question = 
+                { 
+                    question: vm.quizQuestionInput,
+                    correctChoice: vm.correctAnswer,
+                    choices:[
+                        { answer: vm.quizAnswer1Input, correct: parseInt(vm.correctAnswer) == 1 ? 1 : 0 },
+                        { answer: vm.quizAnswer2Input, correct: parseInt(vm.correctAnswer) == 2 ? 1 : 0 },
+                        { answer: vm.quizAnswer3Input, correct: parseInt(vm.correctAnswer) == 3 ? 1 : 0 },
+                        { answer: vm.quizAnswer4Input, correct: parseInt(vm.correctAnswer) == 4 ? 1 : 0 },
+                    ]
+                }
+            this.questions.push(question);
+            this.quizQuestionInput = ''
+            this.quizAnswer1Input = ''
+            this.quizAnswer2Input = ''
+            this.quizAnswer3Input = ''
+            this.quizAnswer4Input = ''
+            this.correctAnswer = 0
+            this.$refs.quizQuestion.classList.remove('.error')
+            this.$refs.quizAnswer1.classList.remove('.error')
+            this.$refs.quizAnswer2.classList.remove('.error')
+            this.$refs.quizAnswer3.classList.remove('.error')
+            this.$refs.quizAnswer4.classList.remove('.error')
+        },
+        checkCorrectAnswer(question) {
+            for (let i=0; question.choices.length; i++) {
+                question.choices[i].correct = parseInt(question.correctChoice) == i+1 ? 1 : 0
+            }
+        }
+    },
+    watch: {
+        quizTitleInput() {
+            if (this.quizTitleInput == '' || this.quizTitleInput.length < 3) this.$refs.quizTitle.classList.add('error')
+            else this.$refs.quizTitle.classList.remove('error')
+            console.log('in func')
+        },
+        quizQuestionInput() {
+            if (this.quizQuestionInput == '' || this.quizQuestionInput.length < 3) {
+                this.$refs.quizQuestion.classList.add('error')
+            } else this.$refs.quizQuestion.classList.remove('error')
+        },
+        quizAnswer1Input() {
+            if (this.quizAnswer1Input == '' || this.quizAnswer1Input.length < 3) this.$refs.quizAnswer1.classList.add('error')
+            else this.$refs.quizAnswer1.classList.remove('error')
+        },
+        quizAnswer2Input() {
+            if (this.quizAnswer2Input == '' || this.quizAnswer2Input.length < 3) this.$refs.quizAnswer2.classList.add('error')
+            else this.$refs.quizAnswer2.classList.remove('error')
+        },
+        quizAnswer3Input() {
+            if (this.quizAnswer3Input == '' || this.quizAnswer3Input.length < 3) this.$refs.quizAnswer3.classList.add('error')
+            else this.$refs.quizAnswer3.classList.remove('error')
+        },
+        quizAnswer4Input() {
+            if (this.quizAnswer4Input == '' || this.quizAnswer4Input.length < 3) this.$refs.quizAnswer4.classList.add('error')
+            else this.$refs.quizAnswer4.classList.remove('error')
         }
     }
 });

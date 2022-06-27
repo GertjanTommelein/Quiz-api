@@ -25,12 +25,20 @@ if (isset($_GET['q'])) {
         $quizSvc = new QuizService();
         $json = file_get_contents('php://input');
         $jsonData = json_decode($json, true);
-
-        if (is_null($quiz = $quizSvc->createQuiz($jsonData['id'], $jsonData['quizTitle'], $jsonData['quizDescription'], $jsonData['quizQuestions']))) {
-            $data['error'] = 'error';
-            print(json_encode($data));
+        try {
+            if (is_null($quiz = $quizSvc->createQuiz($jsonData['id'], $jsonData['quizTitle'], $jsonData['quizDescription'], $jsonData['quizQuestions']))) {
+                $data['error'] = 'error';
+                print(json_encode($data));
+            }
+            else print($quiz);
+        } catch(NotEnoughQuestions $e) {
+            $data['errors'] = [];
+            array_push($data['errors'], 'notEnoughQuestions');
+           print(json_encode($data));
+        } catch(Exception $e) {
+            array_push($data['errors'], $e->getMessage());
+            return print(json_encode($data['errors']));
         }
-        else print($quiz);
         
 
     }
