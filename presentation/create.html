@@ -43,11 +43,14 @@
         input.error:focus {
             background-color:rgb(255 181 181);
         }
+        .navbar-toggler-icon {
+            background-image: url("https://toppng.com/uploads/preview/hamburger-menue-11551049403lqwebrfbdx.png");
+        }
     </style>
 </head>
 <body>
     <div id="create-page">
-        <navigation active="Create"></navigation>
+        <navigation active="Create" :username="user.username"></navigation>
         <div v-if="quizSuccess" class="animated slideInDown alert alert-success col-lg-6" style="margin:10px 25px;">
             <p><b>Success!</b> Quiz aangemaakt</p>
         </div>
@@ -82,7 +85,7 @@
                         <label for="quizDescription">Omschrijving:</label>
                         <textarea type="text" id="quizDescription" class="form-control" v-model="quizDescriptionInput"></textarea>
                     </div>
-                    <button @click.prevent="nextStep" class="btn btn-primary">Volgende stap</button>
+                    <button @click.prevent="nextStep" class="btn btn-primary mt-3">Volgende stap</button>
                 </div>
                 <div v-if="step == 1" class="form-group question-container">
                     <div class="col-lg-6 col-sm-12">
@@ -217,6 +220,7 @@
                 </div>
             </form>
         </div>
+        <v-footer></v-footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -225,5 +229,6 @@
     <script type="module" src="../vue/helpers/helpers.js"></script>
     <script type="module" src="../vue/create.js"></script>
     <script src="../vue/components/navbar.js"></script>
+    <script type="module" src="../vue/components/footer.js"></script>
 </body>
 </html>

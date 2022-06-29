@@ -4,53 +4,143 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <title>Play</title>
     <style>
+        body,  html {
+            height: 100%;
+        }
         .quiz-container {
             width: 500px;
+            position:relative;
+            padding:25px 50px;
+            background-color:white;
+            max-height: 380px;
+        }
+        #play-page {
+            height: 100%;
         }
         .white-box {
             display:flex;
             justify-content: center;
+            height:100%;
+            background-color: #eee;
         }
         .quiz-question-container {
             display: flex;
             justify-content: center;
             padding: 50px;
+            word-break: break-word;
         }
         .quiz-choices-container .choice {
             display:flex;
             justify-content: center;
             border: 1px solid #eee;
             border-radius: 12px;
+            cursor: pointer;
+            word-break: break-word;
         }
+        .choice:hover {
+            box-shadow: 0 0 3px 1px #0b7cff;
+        }
+        .previous {
+            position: absolute;
+            top: 45%;
+            cursor: pointer;
+        }
+        .selected {
+            /*background-color:red;*/
+            box-shadow: 0 0 3px 1px #0b7cff;
+        }
+        .custom-modal-overlay {
+            position:absolute;
+            background-color: rgb(251, 250, 250);
+            z-index: 9;
+            width:100%;
+            height: calc(100% - 0px);
+            top: 115px;
+            background-image: url('https://www.kindpng.com/picc/m/62-621513_transparent-dotted-background-png-dots-background-png-png.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .custom-modal-content {
+            width:100%;
+            max-width:500px;
+            padding: 50px;
+            z-index: 10;
+            background-color: #ffffff;
+            border: 1px solid #35cbde;
+            box-shadow: 0 0 4px 0px #6ddfee;
+            border-radius: 26px;
+        }
+        .custom-modal-content h3 {
+            color: #00b7ce;
+        }
+        .navbar-toggler-icon {
+            background-image: url("https://toppng.com/uploads/preview/hamburger-menue-11551049403lqwebrfbdx.png");
+        }
+        /*.next {
+            position: absolute;
+            top:45%;
+            right: 0;
+            cursor: pointer;
+        }*/
     </style>
 </head>
 <body>
     <div id="play-page">
-          <navigation active="Play"></navigation>
+          <navigation active="Play" :username="user.username"></navigation>
           <div class="white-box p-3">
               <div class="quiz-container">
+                <div class="question-count">
+                    <v-progress-circular class="mr-2" color="#1867c0" :value="((currentQuestionIndex / totalQuestions) * 100)"></v-progress-circular>  Vraag: {{ currentQuestionIndex }} / {{ totalQuestions }}
+                </div>
                 <div class="quiz-question-container">
-                    {{ quizQuestion.question }}
+                    {{ quizQuestion.title }}
                 </div>
-                <div class="quiz-choices-container d-flex flex-wrap">
-                    <div v-for="(choice, index) of quizQuestion.choices" :key="index" class="choice col-6 mt-2">{{ choice.title }}</div>
+                <div class="quiz-choices-container d-flex flex-wrap justify-content-center" ref="choices">
+                    <div v-for="(choice, index) of quizQuestion.choices" :key="index" @click="selectedChoice($event, index)" :class="['choice col-5 mt-2', (index % 2) == 0 ? 'mr-2' : 'ml-2']">{{ choice.title }}</div>
                 </div>
                 
-                    <i class="fa-solid fa-chevron-left"></i>
+                    <!--<i class="previous fa-solid fa-chevron-left"></i>-->
                 
                 
-                    <i class="fa-solid fa-chevron-right"></i>
-                
+                   <!-- <i class="next fa-solid fa-chevron-right"></i>-->
+                <div class="actions d-flex justify-content-end mt-3">
+                    <button v-if="currentQuestionIndex !== totalQuestions" @click="next" class="next btn btn-primary">Volgende</button>
+                    <button v-else @click="goToScore" class="score btn btn-primary">Bekijk score</button>
+                </div>
+              </div>
+              <div v-if="showScoreScreen" class="custom-modal-overlay d-flex flex-column justify-content-center">
+                <div class="d-flex justify-content-center">
+                    <div class="custom-modal-content d-flex flex-column justify-content-center align-items-center">
+                        <!--Vraag {{ scor.question }}         <i v-if="scor.correct" style="color:#19b819;" class="fa-solid fa-circle-check"></i> <i v-else style="color: #f22929;" class="fa-solid fa-circle-xmark"></i>-->
+                        <h3>
+                            gefeliciteerd
+                        </h3>
+                        <p class="mb-0">Je hebt</p>
+                        <h3>{{ correctUserAnswers }} / {{ totalQuestions }}</h3>
+                        <p class="mb-0">vragen juist</p>
+                        <div class="d-flex mt-4 justify-content-between">
+                            <button class="btn btn-primary mr-2" @click="resetQuiz">Speel opnieuw</button>
+                            <button class="btn btn-primary ml-2" @click="goToHome">Kies een andere quiz</button>
+                        </div>
+                    </div>
+                </div>
               </div>
           </div>
+          <v-footer></v-footer>
       </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
     <script type="module" src="../vue/helpers/helpers.js"></script>
     <script type="module" src="../vue/play.js"></script>
     <script src="../vue/components/navbar.js"></script>
+    <script type="module" src="../vue/components/footer.js"></script>
 </body>
 </html>

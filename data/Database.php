@@ -17,11 +17,16 @@ class Database {
         return $this->conn->insert_id;
     }
     public function pQuery($sql, $paramTypes = false ,$paramBindings = false) {
+        $sqlStr = explode(' ', $sql);
+        
         $this->conn = $this->connect();
         $stmt = $this->conn->prepare($sql);
         if ($paramTypes && $paramBindings) {
             gettype($paramBindings) ? $stmt->bind_param($paramTypes, ...$paramBindings) : $stmt->bind_param($paramTypes, $paramBindings);
-        } 
+        }
+        if (strtolower($sqlStr[0]) == 'update') {
+            return $stmt->execute();
+        }
         $stmt->execute();
         $result = $stmt->get_result();
         return $result;

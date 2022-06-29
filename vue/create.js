@@ -16,11 +16,18 @@ new Vue({
             quizSuccess: false,
             correctAnswer: 0,
             step: 0,
-            questions: []
+            questions: [],
+            user: ''
         }
     },
     mounted() {
+        const vm = this;
        web("index.php?q=quiz", "get").then((data) => this.quizData = data);
+       if (localStorage.getItem("user_id")) {
+        web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
+        } else {
+            window.location.href = "loginForm.html"
+        }
     },
     methods: {
         createQuiz() {

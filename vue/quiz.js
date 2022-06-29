@@ -25,6 +25,8 @@ new Vue({
         this.quizData = this.fetch("index.php?q=quiz", "get");
         if (localStorage.getItem("user_id")) {
             web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
+        } else {
+            window.location.href = "loginForm.html"
         }
 
     },

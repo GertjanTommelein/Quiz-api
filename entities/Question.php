@@ -3,13 +3,14 @@ declare(strict_types=1);
 
 class Question {
     public $id;
-    public $question;
+    public $title;
     public $choices = [];
+    public $correctChoice;
 
     public function __construct($id, $question, $choices)
     {
         $this->id = $id;
-        $this->question = $question;
+        $this->title = $question;
         $this->choices = $choices;
     }
 
@@ -17,7 +18,13 @@ class Question {
         return $this->id;
     }
     public function getQuestion() : string {
-        return $this->question;
+        return $this->title;
+    }
+    public function setCorrectChoice(int $correctChoice) {
+        $this->correctChoice = $correctChoice;
+    }
+    public function getCorrectChoice() : int {
+        return $this->correctChoice;
     }
     public function getChoices() : Array {
         return $this->choices;

@@ -1,3 +1,4 @@
+import { web } from "./helpers/helpers.js";
 new Vue({
     el: '#register-page',
     data() {
@@ -6,11 +7,15 @@ new Vue({
             usernameInput: '',
             passwordInput: '',
             responseData: false,
-            errorUsername: false
+            errorUsername: false,
+            user: ''
         }
     },
     mounted() {
         //this.fetch('test.php', 'get');
+        if (localStorage.getItem("user_id")) {
+            web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
+        }
     },
     methods: {
         fetch(url, method, formData = false) {

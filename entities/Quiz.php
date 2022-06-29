@@ -6,6 +6,7 @@ class Quiz {
     public $title;
     public $description;
     public $questions = [];
+    public $createdBy;
 
     public function __construct($id, $title, $description) {
         $this->id = $id;
@@ -21,6 +22,12 @@ class Quiz {
     }
     public function getDescription() : string {
         return $this->description;
+    }
+    public function setCreatedBy(string $createdBy) {
+        $this->createdBy = $createdBy;
+    }
+    public function getCreatedBy() : string {
+        return $this->createdBy;
     }
     public function getQuestions() : Array {
         return $this->questions;

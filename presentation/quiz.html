@@ -6,16 +6,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    
     <title>Quiz</title>
     <style>
         td,th {
             padding: 0 10px;
         }
+        .home_header {
+    background-image: linear-gradient(to right, #1d6da7d6, #1d6da7);
+    height:95vh;
+    clip-path:polygon(0 0, 100% 0, 100% 75%, 0 100%);
+    }
+    .header_wrapper {
+        height:100px;
+        /*border-bottom:1px solid #d6d4d452;*/
+        box-shadow: inset 0 -1px 0 0 rgba(255,255,255,0.2);
+    }
+    .header_wrapper div {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        max-width:1600px;
+        margin:0 auto;
+        height:100%;
+    }
+    .logo {
+        margin:25px 25px;
+        width:90px;
+    }
+    .navbar-toggler-icon {
+            background-image: url("https://toppng.com/uploads/preview/hamburger-menue-11551049403lqwebrfbdx.png");
+        }
     </style>
 </head>
 <body>
     <div id="quiz-page">
-        <navigation :username="user.username"></navigation>
+        <navigation active="Quiz" :username="user.username"></navigation>
         <div class="white-box p-3">
             <!-- <div class="d-flex">
                 <button class="btn btn-primary" @click="showQuizForm = !showQuizForm">quiz formulier</button>
@@ -66,6 +92,7 @@
                         <th>Quiz titel</th>
                         <th>omschrijving</th>
                         <th>vragen</th>
+                        <th>Gemaakt door</th>
                         <th>&nbsp;</th>
                         <th>&nbsp;</th>
                         <th>&nbsp;</th>
@@ -75,6 +102,7 @@
                         <td>{{ quiz.title }}</td>
                         <td>{{ quiz.description }}</td>
                         <td>{{ quiz.questions.length }}</td>
+                        <td>{{ quiz.createdBy }}</td>
                         <td class="text-primary" @click="playQuiz(quiz.id)" style="cursor:pointer;"><i class="fa-solid fa-play"></i></td>
                         <td class="text-warning" style="cursor:pointer;" @click="editQuiz(quiz.id)"><i class="fa-solid fa-pen-to-square"></i></td>
                         <td class="text-danger" @click="deleteQuiz(quiz.id, index)" style="cursor:pointer;">X</td>
@@ -83,19 +111,8 @@
                 </table>
                 
             </div>
-            <table class="users-list d-flex flex-column" style="max-width:500px;">
-                <tr>
-                    <th class="pl-3 pr-3">User id</th>
-                    <th class="pl-3 pr-3">Username</th>
-                    <th class="pl-3 pr-3">created_at</th>
-                </tr>
-                <tr v-for="(user, index) of result.users_list" :key="index" class="user w-100">
-                    <td class="justify-items-center pl-3 pr-3">{{ user.id }}</td>
-                    <td class="justify-items-center pl-3 pr-3">{{ user.username }}</td>
-                    <td class="justify-items-center pl-3 pr-3">{{ user.created_at }}</td>
-                </tr>
-            </table>
         </div>
+        <v-footer></v-footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -104,5 +121,6 @@
     <script type="module" src="../vue/helpers/helpers.js"></script>
     <script type="module" src="../vue/quiz.js"></script>
     <script type="module" src="../vue/components/navbar.js"></script>
+    <script type="module" src="../vue/components/footer.js"></script>
 </body>
 </html>

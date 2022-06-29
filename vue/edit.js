@@ -14,9 +14,10 @@ new Vue({
             quizCorrectAnswerInput: '',
             quizData: false,
             quizSuccess: false,
-            correctAnswer: '',
+            correctAnswer: 0,
             questions: [],
-            correctChoice: 0
+            correctChoice: 0,
+            user: ''
         }
     },
     mounted() {
@@ -29,6 +30,7 @@ new Vue({
         console.log(vm.quizData[0].questions);
             vm.quizTitleInput = vm.quizData[0].title
             vm.quizDescriptionInput = vm.quizData[0].description
+            vm.questions = vm.quizData[0].questions;
             // vm.quizQuestionInput = vm.quizData[0].questions[0].question
             // vm.quizAnswer1Input = vm.quizData[0].questions[0].choices[0].title
             // vm.quizAnswer2Input = vm.quizData[0].questions[0].choices[1].title
@@ -36,6 +38,9 @@ new Vue({
             // vm.quizAnswer4Input = vm.quizData[0].questions[0].choices[3].title
             //vm.correctAnswer = vm.quizData[0].questions[0].choices.findIndex((choice) => choice.correct == 1) + 1
        });
+       if (localStorage.getItem("user_id")) {
+        web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
+        }
     },
     methods: {
         updateQuiz() {
@@ -56,7 +61,7 @@ new Vue({
                 id: vm.quizData[0].id,
                 title: vm.quizTitleInput,
                 description: vm.quizDescriptionInput,
-                questions: arr
+                questions: vm.questions
             }
             web("http://localhost/Quiz/index.php?q=updateQuiz", "post", args).then(() => {
                 vm.quizSuccess = true
@@ -72,22 +77,23 @@ new Vue({
             if (this.correctAnswer == 0) return false
             const question = 
                 { 
-                    question: vm.quizQuestionInput,
+                    title: vm.quizQuestionInput,
                     correctChoice: vm.correctAnswer,
                     choices:[
-                        { answer: vm.quizAnswer1Input, correct: parseInt(vm.correctAnswer) == 1 ? 1 : 0 },
-                        { answer: vm.quizAnswer2Input, correct: parseInt(vm.correctAnswer) == 2 ? 1 : 0 },
-                        { answer: vm.quizAnswer3Input, correct: parseInt(vm.correctAnswer) == 3 ? 1 : 0 },
-                        { answer: vm.quizAnswer4Input, correct: parseInt(vm.correctAnswer) == 4 ? 1 : 0 },
+                        { title: vm.quizAnswer1Input, correct: parseInt(vm.correctAnswer) == 1 ? 1 : 0 },
+                        { title: vm.quizAnswer2Input, correct: parseInt(vm.correctAnswer) == 2 ? 1 : 0 },
+                        { title: vm.quizAnswer3Input, correct: parseInt(vm.correctAnswer) == 3 ? 1 : 0 },
+                        { title: vm.quizAnswer4Input, correct: parseInt(vm.correctAnswer) == 4 ? 1 : 0 },
                     ]
                 }
-            questions.push(question);
+            this.questions.push(question);
             this.quizQuestionInput = ''
             this.quizAnswer1Input = ''
             this.quizAnswer2Input = ''
             this.quizAnswer3Input = ''
             this.quizAnswer4Input = ''
             this.correctAnswer = 0
+            this.correctChoice = 0
             this.$refs.quizQuestion.classList.remove('.error')
             this.$refs.quizAnswer1.classList.remove('.error')
             this.$refs.quizAnswer2.classList.remove('.error')
@@ -97,9 +103,10 @@ new Vue({
         checkCorrectAnswer(question) {
             const vm = this;
             console.log(question);
-            for (let i=0; question.choices.length; i++) {
-                question.choices[i].correct = parseInt(vm.correctAnswer) == i+1 ? 1 : 0
+            for (let i=0; i < question.choices.length; i++) {
+                console.log('index func loop: ' + i)
+                question.choices[i].correct = (parseInt(question.correctChoice) == i+1 ? 1 : 0)
             }
         }
     }
-});
+}); 

@@ -10,11 +10,15 @@
        #edit-page {
             padding: 15px;
         }
+        .navbar-toggler-icon {
+            background-image: url("https://toppng.com/uploads/preview/hamburger-menue-11551049403lqwebrfbdx.png");
+        }
     </style>
 </head>
 <body>
     <div id="edit-page">
-        <navigation></navigation>
+        <navigation :username="user.username"></navigation>
+        <div>
         <form class="form-group">
             <div class="form-group d-flex flex-wrap">
                 <div class="col-lg-6 col-sm-12">
@@ -83,11 +87,12 @@
                 </div>
                 <button class="btn btn-primary mt-3" @click.prevent="addQuestion(quizData[0].questions)">Voeg vraag toe</button>
             </div>
+            </form>
             <div v-if="quizData[0].questions.length" class="form-group">
                 <h5>Vragen:</h5>
-                <div v-for="(question, index) of quizData[0].questions" :index="index" class="card mb-2">
+                <div v-for="(question, index) of questions" :index="index" class="card mb-2">
                     <div class="card-header d-flex justify-content-between" style="cursor:pointer;border-bottom: 0px;" :id="'heading' + index" @click.prevent class="btn" data-toggle="collapse" :data-target="'#collapse' + index" aria-expanded="true" :aria-controls="'collapse' + index"> 
-                          {{ question.question }}
+                          {{ question.title }}
                       <i class="fa-solid fa-chevron-down"></i>
                     </div>
                 
@@ -96,14 +101,14 @@
                         <div class="form-group question-container">
                             <div class="col-lg-6 col-sm-12">
                                 <label for="quizQuestion">Vraag:</label>
-                                <input type="text" id="quizQuestion" class="form-control" v-model="question.question">
+                                <input type="text" id="quizQuestion" class="form-control" v-model="question.title">
                             </div>
                         </div>
-                        <div class="form-group d-flex flex-wrap choices-container">
+                        <form class="form-group d-flex flex-wrap choices-container">
                             <div v-for="(choice, choiceIndex) of question.choices" :key="choiceIndex" class="col-lg-6  col-sm-12">
                                 <label for="quizAnswer1">Antwoord {{ choiceIndex }}:</label>
                                 <div class="d-flex align-items-center">
-                                    <input type="radio" @change="checkCorrectAnswer(question)" class="mr-2" name="correct_choice" :value="choiceIndex +1" v-model="correctAnswer" id="">
+                                    <input type="radio" @change="checkCorrectAnswer(question)" class="mr-2" :name="'correct_choice' + choiceIndex" :value="choiceIndex +1" v-model="question.correctChoice" id="">
                                     <div class="input-group">
                                         <input type="text" id="quizAnswer1" class="form-control" v-model="choice.title">
                                         <div v-if="choice.correct == 1" class="input-group-append d-flex align-items-center" style="background-color:rgb(149, 253, 149);">
@@ -112,7 +117,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                       </div>
                     </div>
                   </div>
@@ -168,7 +173,8 @@
                 </div>
             </div> -->
             <button class="btn btn-primary mt-3" @click.prevent="updateQuiz">Update</button>
-        </form>
+        </div>
+        <v-footer></v-footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -177,5 +183,6 @@
     <script type="module" src="../vue/helpers/helpers.js"></script>
     <script type="module" src="../vue/edit.js"></script>
     <script type="module" src="../vue/components/navbar.js"></script>
+    <script type="module" src="../vue/components/footer.js"></script>
 </body>
 </html>
