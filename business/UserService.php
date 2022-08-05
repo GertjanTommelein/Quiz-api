@@ -39,4 +39,8 @@ class UserService {
         if (hash_equals($user->getToken() ,$token)) return true;
         else return false;
     }
+    public function saveAvatar($fileName, $userId) {
+        $userDAO = new UserDAO();
+        $userDAO->saveAvatar($userId ,$fileName); 
+    }
 }

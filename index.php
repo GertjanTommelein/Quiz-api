@@ -71,6 +71,17 @@ if (isset($_GET['q'])) {
     /*if ($_GET['q'] == "createQuiz") {
         $quizSvc = ////
     }*/
+    if ($_GET['q'] == "uploadAvatar") {
+        $userSvc = new UserService();
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES['file']['name']);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $files = $_FILES;
+        $userSvc->saveAvatar($files['file']['name'], $_POST['userId']);
+        move_uploaded_file($files['file']['tmp_name'] ,$target_file) or die("Couldnt move file");
+        $data['result'] = true;
+        print(json_encode($data));
+    }
 } else {
     echo "Geen geldig api endpoint";
     die();

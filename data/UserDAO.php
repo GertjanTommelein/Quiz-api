@@ -53,17 +53,23 @@ class UserDAO {
         else return false;
     }
     public function getAll($id = false) {
-        $sql = "SELECT id, username, password, created_at FROM users ". ($id ? "WHERE id = ?" : "");
+        $sql = "SELECT id, username, password, created_at, avatar FROM users ". ($id ? "WHERE id = ?" : "");
         $db = new Database();
         $result = ($id ? $db->pQuery($sql, 'i', [$id]) : $db->pQuery($sql));
         $resultSet = $result->fetch_all(MYSQLI_ASSOC);
         return $resultSet;
     }
     public function get($id) {
-        $sql = "SELECT id, username, created_at FROM users WHERE id = ?";
+        $sql = "SELECT id, username, created_at, avatar FROM users WHERE id = ?";
         $db = new Database();
         $result = $db->pQuery($sql, 'i', $id);
         $resultSet = $result->fetch_assoc();
         return $resultSet;
-    } 
+    }
+    public function saveAvatar($userId ,$avatar) {
+        $db = new Database();
+        $sql = "UPDATE users SET avatar = ? WHERE id = ?";
+        $result = $db->pQuery($sql, 'si', [$avatar, $userId]);
+        return $result;
+    }
 }

@@ -7,12 +7,15 @@ Vue.component('navigation',{
             </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-                <li class="nav-item dropdown">
+                <li class="nav-item dropdown d-flex align-items-center">
+                    <div ref="navImgContainer" style="width: 36px;">
+                    <img class="img-fluid nav-avatar" ref="navAvatar" :src="'../uploads/' + user.avatar" />
+                    </div>
                     <a class="nav-link dropdown-toggle" style="margin: 0 10px;color: white;font-size: 1.5rem;" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    {{ username }}
+                    {{ user.username }}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="http://localhost/Quiz/presentation/profile.html">Profile</a>
                         <a @click="logout" class="dropdown-item" href="#">Logout</a>
                     </div>
                 </li>
@@ -26,7 +29,8 @@ Vue.component('navigation',{
     `,
     props: {
         active: String,
-        username: String
+        username: String,
+        refetchUser: Boolean
     },
     data () {
         return {
@@ -37,7 +41,7 @@ Vue.component('navigation',{
         
         const vm = this;
         if (localStorage.getItem("user_id")) {
-          // web("index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0].username);
+            vm.fetch("http://localhost/Quiz/index.php?q=users&id=" + localStorage.getItem("user_id"), "get").then((response) => vm.user = response.users_list[0]);
         }
     },
     methods: {
@@ -45,6 +49,29 @@ Vue.component('navigation',{
             console.log('logged out');
             localStorage.clear();
             window.location.href="loginForm.html"
-        }
-    }
+        },fetch(url, method, formData = false) {
+            const vm = this;
+            const baseUrl = "http://localhost/Quiz/";
+          if (method == "get") {
+                return fetch(url)
+                .then(response => response.json())
+                .then(data => (console.log(data), vm.result = data))
+            }
+            if (method == "post") {
+               return fetch(url, {
+                method: 'POST', // or 'PUT'
+                body: formData,
+                })
+                .then(response => (response.json()))
+                .then(data => {
+                console.log('Success:', vm.data = data);
+                return data;
+                })
+                .catch((error) => {
+                console.error('Error:', vm.data = error);
+                });
+            }
+        },
+
+    },
 });

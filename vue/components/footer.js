@@ -1,6 +1,6 @@
 Vue.component('v-footer',{
     template: `
-        <footer id="footer" style="position: absolute;bottom: 0;width: 100%;">
+        <footer id="footer" style="position: absolute;width: 100%;">
             <div class="footer-wrapper">
                 
             </div>
